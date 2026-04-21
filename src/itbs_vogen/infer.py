@@ -31,7 +31,10 @@ class InferConfig:
     f0_up_key: int = 0
     index_rate: float = 0.66
     protect: float = 0.33
-    rms_mix_rate: float = 1.0
+    # RVC's own default; "1.0" follows the source envelope exactly which drags
+    # degraded-source noise through to the output and robs the result of the
+    # target speaker's natural dynamics.
+    rms_mix_rate: float = 0.25
     filter_radius: int = 3
     resample_sr: int = 0
     device: str | None = None

@@ -21,7 +21,8 @@ def _build_infer_parser(sub: argparse._SubParsersAction) -> None:
     p.add_argument("--f0-up-key", type=int, default=0)
     p.add_argument("--index-rate", type=float, default=0.66)
     p.add_argument("--protect", type=float, default=0.33)
-    p.add_argument("--rms-mix-rate", type=float, default=1.0)
+    p.add_argument("--rms-mix-rate", type=float, default=0.25,
+                   help="Envelope mix with source (0-1). 0.25 = RVC default; higher follows source volume more.")
     p.add_argument("--device", default=None)
 
 
