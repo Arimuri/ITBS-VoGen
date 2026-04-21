@@ -25,6 +25,9 @@ from random import shuffle
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RVC_DIR = REPO_ROOT / "third_party" / "rvc"
+# Directory containing a sitecustomize.py that restores torch.load's pre-2.6
+# weights_only=False default, so fairseq can read HuBERT checkpoints.
+COMPAT_DIR = Path(__file__).parent / "_compat"
 
 # Sample rates RVC understands.
 SR_CHOICES = {"32k": 32000, "40k": 40000, "48k": 48000}
@@ -63,7 +66,14 @@ def detect_device() -> str:
 def _run(cmd: list[str], step: str) -> None:
     print(f"\n[itbs-vogen/train] ===== {step} =====")
     print(f"[itbs-vogen/train] $ {' '.join(cmd)}")
-    subprocess.run(cmd, cwd=RVC_DIR, check=True)
+    env = os.environ.copy()
+    # Put our compat dir first so Python's site initialization loads our
+    # sitecustomize.py (torch.load weights_only shim for fairseq 0.12.2).
+    existing_pp = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = (
+        f"{COMPAT_DIR}:{existing_pp}" if existing_pp else str(COMPAT_DIR)
+    )
+    subprocess.run(cmd, cwd=RVC_DIR, check=True, env=env)
 
 
 def _exp_dir(speaker: str) -> Path:

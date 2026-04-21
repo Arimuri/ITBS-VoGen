@@ -17,6 +17,9 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 RVC_DIR = REPO_ROOT / "third_party" / "rvc"
 RVC_WEIGHTS_DIR = RVC_DIR / "assets" / "weights"
 LOCAL_SPEAKERS_DIR = REPO_ROOT / "models" / "speakers"
+# See src/itbs_vogen/_compat/sitecustomize.py — restores pre-2.6 torch.load
+# default so fairseq can read the HuBERT checkpoint at inference time too.
+COMPAT_DIR = Path(__file__).parent / "_compat"
 
 
 @dataclass
@@ -107,6 +110,10 @@ def run(cfg: InferConfig) -> Path:
 
     env = os.environ.copy()
     env.setdefault("PYTHONIOENCODING", "utf-8")
+    existing_pp = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = (
+        f"{COMPAT_DIR}:{existing_pp}" if existing_pp else str(COMPAT_DIR)
+    )
 
     print(f"[itbs-vogen] device={device} speaker={cfg.speaker} f0={cfg.f0_method}")
     print(f"[itbs-vogen] input={cfg.input_path}")
