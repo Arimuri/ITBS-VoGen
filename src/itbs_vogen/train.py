@@ -94,14 +94,39 @@ def preprocess(cfg: TrainConfig) -> None:
 
 
 def extract_f0(cfg: TrainConfig) -> None:
-    """Extract F0 using the single-process RMVPE script (robust on Mac)."""
+    """Extract F0 using RMVPE.
+
+    Picks the right RVC script based on device:
+    - CUDA  -> extract_f0_rmvpe.py       (single-process, uses CUDA_VISIBLE_DEVICES)
+    - CPU   -> extract_f0_print.py with method "rmvpe" (no GPU required)
+
+    The ``_dml`` variant (DirectML, Windows) is intentionally avoided; it imports
+    ``torch_directml`` unconditionally and fails on Linux/Mac.
+    """
     exp_dir = _exp_dir(cfg.speaker)
-    # extract_f0_rmvpe_dml.py expects: <exp_dir>
-    cmd = [
-        sys.executable,
-        "infer/modules/train/extract/extract_f0_rmvpe_dml.py",
-        str(exp_dir),
-    ]
+    device = cfg.device or detect_device()
+
+    if device.startswith("cuda"):
+        # extract_f0_rmvpe.py args: n_part, i_part, i_gpu, exp_dir, is_half
+        cmd = [
+            sys.executable,
+            "infer/modules/train/extract/extract_f0_rmvpe.py",
+            "1",      # n_part
+            "0",      # i_part
+            "0",      # i_gpu (sets CUDA_VISIBLE_DEVICES)
+            str(exp_dir),
+            "False",  # is_half
+        ]
+    else:
+        # CPU / MPS path: the generic extractor supports "rmvpe" as an f0 method.
+        # args: exp_dir, n_p, f0method
+        cmd = [
+            sys.executable,
+            "infer/modules/train/extract/extract_f0_print.py",
+            str(exp_dir),
+            str(cfg.n_proc),
+            "rmvpe",
+        ]
     _run(cmd, "2/5 extract F0 (RMVPE)")
 
 
