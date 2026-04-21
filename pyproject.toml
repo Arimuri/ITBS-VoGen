@@ -7,30 +7,18 @@ requires-python = ">=3.10,<3.11"
 license = { file = "LICENSE" }
 authors = [{ name = "Arimuri" }]
 
-# Inference-only runtime dependencies.
-# Pinned ranges mirror what RVC's inference path actually needs on Apple Silicon.
-# Tight pins are intentional — RVC is sensitive to torch / fairseq / numpy versions.
-dependencies = [
-    "torch>=2.1,<2.4",
-    "torchaudio>=2.1,<2.4",
-    "numpy>=1.23,<2.0",
-    "scipy>=1.11",
-    "librosa>=0.10",
-    "soundfile>=0.12",
-    "faiss-cpu>=1.7.4",
-    "fairseq @ git+https://github.com/One-sixth/fairseq.git",
-    "praat-parselmouth>=0.4.3",
-    "pyworld>=0.3.4",
-    "torchcrepe>=0.0.23",
-    "resampy>=0.4",
-    "einops>=0.7",
-    "tqdm>=4.65",
-]
+# Runtime deps for our wrapper itself are minimal — the heavy deps come from
+# RVC's own requirements.txt under third_party/rvc/, installed separately.
+# See README for setup steps.
+dependencies = []
 
 [project.optional-dependencies]
 dev = [
     "ruff>=0.4",
 ]
+
+[project.scripts]
+itbs-vogen = "itbs_vogen.cli:main"
 
 [build-system]
 requires = ["hatchling"]

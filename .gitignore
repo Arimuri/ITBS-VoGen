@@ -51,6 +51,14 @@ samples/
 inputs/
 outputs/
 
+# Training data — private, never commit (belt-and-suspenders; *.wav already covers it)
+Train/
+training_data/
+datasets/
+
+# macOS
+.DS_Store
+
 # Editor / OS
 .DS_Store
 .vscode/
