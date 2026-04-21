@@ -114,6 +114,11 @@ def run(cfg: InferConfig) -> Path:
     env["PYTHONPATH"] = (
         f"{COMPAT_DIR}:{existing_pp}" if existing_pp else str(COMPAT_DIR)
     )
+    # Let MPS fall back to CPU for ops it doesn't implement (e.g. conv1d with
+    # output channels > 65536 used by RVC's hifigan-like decoder). Without this,
+    # inference crashes with NotImplementedError on Apple Silicon.
+    env.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
+    env.setdefault("PYTORCH_MPS_HIGH_WATERMARK_RATIO", "0.0")
 
     print(f"[itbs-vogen] device={device} speaker={cfg.speaker} f0={cfg.f0_method}")
     print(f"[itbs-vogen] input={cfg.input_path}")
