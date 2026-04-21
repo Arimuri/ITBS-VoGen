@@ -73,5 +73,10 @@ logs/
 # Jupyter
 .ipynb_checkpoints/
 
+# Colab-executed notebooks with outputs (may contain private filenames from logs)
+notebooks/*_executed.ipynb
+notebooks/*-executed.ipynb
+notebooks/*.local.ipynb
+
 # Claude / local tool state
 .claude/
