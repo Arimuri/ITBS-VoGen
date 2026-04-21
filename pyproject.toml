@@ -1,0 +1,44 @@
+[project]
+name = "itbs-vogen"
+version = "0.0.1"
+description = "Clean vocal regeneration from AI-separated glitchy vocals, built on RVC."
+readme = "README.md"
+requires-python = ">=3.10,<3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Arimuri" }]
+
+# Inference-only runtime dependencies.
+# Pinned ranges mirror what RVC's inference path actually needs on Apple Silicon.
+# Tight pins are intentional — RVC is sensitive to torch / fairseq / numpy versions.
+dependencies = [
+    "torch>=2.1,<2.4",
+    "torchaudio>=2.1,<2.4",
+    "numpy>=1.23,<2.0",
+    "scipy>=1.11",
+    "librosa>=0.10",
+    "soundfile>=0.12",
+    "faiss-cpu>=1.7.4",
+    "fairseq @ git+https://github.com/One-sixth/fairseq.git",
+    "praat-parselmouth>=0.4.3",
+    "pyworld>=0.3.4",
+    "torchcrepe>=0.0.23",
+    "resampy>=0.4",
+    "einops>=0.7",
+    "tqdm>=4.65",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.4",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/itbs_vogen"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
